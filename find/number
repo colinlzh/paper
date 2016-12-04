@@ -1,0 +1,369 @@
+
+%%%%%%%%%%%%%%%%%%%%%%% file typeinst.tex %%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% This is the LaTeX source for the instructions to authors using
+% the LaTeX document class 'llncs.cls' for contributions to
+% the Lecture Notes in Computer Sciences series.
+% http://www.springer.com/lncs       Springer Heidelberg 2006/05/04
+%
+% It may be used as a template for your own input - copy it
+% to a new file with a new name and use it as the basis
+% for your article.
+%
+% NB: the document class 'llncs' has its own and detailed documentation, see
+% ftp://ftp.springer.de/data/pubftp/pub/tex/latex/llncs/latex2e/llncsdoc.pdf
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[runningheads,a4paper]{llncs}
+
+\usepackage{amssymb}
+\setcounter{tocdepth}{3}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\DeclareMathOperator*{\argmax}{argmax}
+
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{rotating}
+
+\floatname{algorithm}{Algorithm}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+
+\usepackage{url}
+\urldef{\mailsa}\path|{alfred.hofmann, ursula.barth, ingrid.haas, frank.holzwarth,|
+\urldef{\mailsb}\path|anna.kramer, leonie.kunz, christine.reiss, nicole.sator,|
+\urldef{\mailsc}\path|erika.siebert-cole, peter.strasser, lncs}@springer.com|    
+\newcommand{\keywords}[1]{\par\addvspace\baselineskip
+\noindent\keywordname\enspace\ignorespaces#1}
+
+\usepackage[perpage,symbol*]{footmisc}
+
+\begin{document}
+
+\mainmatter  % start of an individual contribution
+
+% first the title is needed
+\title{Using infrequent mobility motifs to discover mass activities}s
+
+% a short form should be given in case it is too long for the running head
+\titlerunning{Using infrequent mobility motifs to discover mass activities}
+
+% the name(s) of the author(s) follow(s) next
+%
+% NB: Chinese authors should write their first names(s) in front of
+% their surnames. This ensures that the names appear correctly in
+% the running heads and the author index.
+%
+\author{Zhenhuan Li\inst{1}
+\and Haiyang Wang\inst{2}
+\and Xiaming Chen\inst{2}\and\\
+Yongkun Wang\inst{3}\and Yaohui Jin\inst{2,3}\and Wenjun Zhang\inst{1}}
+%
+\authorrunning{Z. Li et al.}
+% (feature abused for this document to repeat the title also on left hand pages)
+
+% the affiliations are given next; don't give your e-mail address
+% unless you accept that it will be published
+\institute{Inst. of Image Commun. \& Inf. Process.\and State Key Lab of Advanced Optical Communication System and Network \and
+Network and Information Center\\
+Shanghai Jiao Tong University, P. R. China\\
+\email{zhangwenjun@sjtu.edu.cn}}
+
+
+%
+% NB: a more complex sample for affiliations and the mapping to the
+% corresponding authors can be found in the file "llncs.dem"
+% (search for the string "\mainmatter" where a contribution starts).
+% "llncs.dem" accompanies the document class "llncs.cls".
+%
+
+\toctitle{Lecture Notes in Computer Science}
+\tocauthor{Authors' Instructions}
+
+\maketitle
+
+
+\begin{abstract}
+Mobility motif is some common topology structure graphs extracted from human’s trajectories, which can show human spatio-temporal mobility behavior in different scales. Individual’s mobility pattern has the character of low-entropy, and most human's full-day mobility trajectories can be represented by just a few mobility motifs, which has attracted many researchers study. However, few people pay attention on the rest infrequent motifs, from which we can discover more interesting and meaningful phenomena.  We consider that the emergence of each infrequent mobility pattern has their reasons behind and mass activities can make a group of people have abnormal motifs. In this paper ,we research the relationship between these abnormal motifs and mass activities, discovering crowds on the day they attended activity are more likely to have abnormal motifs than nromal days. In each day, with scale of activities increasing, more people present abnormal motifs. Motivated by this, we propose a novel model which is verified by the results of experiments using the real world data to analyze mobility motif extracted from campus wifi and consuming record of campus card to search students' mass activities. Compared to previous trajectory analysis, our work was focused on people’s structural abnormal mobility patterns in a novel perspective, and it’s a promising step towards unraveling the actual activities behind human mobility.
+
+\keywords{Mobility motif, Anomaly detection, Human mobility, Wifi records data, Consuming card data}
+\end{abstract}
+
+
+\section{Introduction}
+Nowadays, with the development of wireless communication and mobile devices, human traces can be record by many different location-acquisition technologies, such as GPS, WiFi and GSM network. A continuous collection of individual history location data for a long duration could bring various accuracy records about users’ mobility. In most of the time, these records exhibit high regularity due to the characters of human mobility. Researching from this regularity, we can conclude that people have their own stable moving rules. Several work has been made for mining and understanding these rules,\cite{8}\cite{9}  which  can give us a deeper understand towards human common mobility pattern.
+
+However, our research target, unregularity or abnormal mobility patterns, have significant meanings,too. Human mobility can be represented in different scale. In a macro point of view ,as mentioned above, people have regularly mobile trends and daily routines. And in micro point of view, people have their mobility preferences which  may vary with each person or even same person in different times. Therefore, these mobility preferences make types of human mobility patterns become rich enough, which brings a interesting phenomenon as shown in Fig\ref{fig1} that frequent mobility patterns have less categories but appear more, infrequnt mobility patterns appear less but have much more categories. An individual's mobility preference may be affected by a great many factors, such as journeyed people, weather or even the individual's mood. If we want to explore the reasons behind an individual's mobility preference, we need enormous number of various types of related information which is difficult to obtain frequently. However, if we change the target into a group of people, different individual's personal reasons could not affect too many people because these reasons varys from person to person. Using statistical method, we can explore the common factors that affect the group's mobility preferences, mass activity is an example. This could reduce the required information and lead the exploration  more easy to achieve.
+\begin{figure}
+	\centering
+	\includegraphics[height=6cm]{figs/dis.eps}
+	\caption{Mobility pattern distribution.}
+	\label{fig1}
+\end{figure}
+
+Mobility motif——the set of ubiquitous networks, was used to study general human mobility characteristics in different scales.\cite{1} In this paper, mobility motif is the tool we choose to help us research the relationship and influence between mass activities and human mobility pattern. When describing human behavior, we usually use a quadruple which is (O,P,T,A). Here "O" means the object who produce behavior; "P" means the place where behavior emerges; "T" means the time when behavior arises; "A" means the action which the object has. However, this quadruple is the most ideal situation, actually in terms of the present technology, most of the mobile devices can only record where and when their users are but hardly record what their users do. So most of the trajectory data are composed of user ID, place and time.  Also, limited by technical means and privacy policies, the place and time of trajectory data are often disturbed and fuzzy which bring many difficulties to the conventional trajectory analysis methods under some bad conditions. Mobility motif could overcome these limitaions to a certain degree. As Figure\ref{motifpair} shows, motif uses points and oriented-lines to represent stay and transfer behaviors, which only need the order or sequence of records instead of accurate timestamps. Also motif doesn't need the exactly place position but a judgment that if the place is visited or not. Motif focus mostly on the topology structure of human mobility behavior so that can ignore some limitations. More details about motif will mentioned later.
+\begin{figure}
+	\centering
+	\includegraphics[height=6cm]{figs/motifpair}
+	\caption{Mobility motifs.}
+	\label{motifpair}
+\end{figure}
+
+There have been many researches about human mobility analysis and pattern recognization with various kinds of data such as survey and questionnaire data\cite{8}\cite{9}, mobile phone data\cite{10}\cite{11}\cite{12}\cite{16}, WIFI signature data and social media data.\cite{7}\cite{10}\cite{15} However, there are several limitations when we use these data. Survey and questionnaire data is very easy to obtain but hardly have groud truth because the data is mostly depend on those questioned people's memory, and that brings huge uncertainty. As mobile phone data has a big spatial coverage and great real-time performance, but mobile phone data often posseseed by different operators and each operator has a relatively small user coverage, not to mention mobile phone data is very difficult to obtain due to the strict privacy policy. Social media data can be easily obtained and contains abundant semantic information. But its location information is too sparse and time information has a uncertain delay which make social media data can only be the supplement to other forms of trajectory data. WIFI signature data can record very accurate location and time information, but there is no guarantee that the user always open WIFI. And usually WIFI hot spots's number is too small to coverage all regions researches need. In another words, WIFI signature data has good accuracy but poor coverage. In this paper we choose campus WIFI signature data as the basis data of our analysis, this data will record students wireless Internet behavior in campus with over 2,000 AP hot spots. And in order to solve the problem of coverage, we involve the consuming records of campus card. Merging the both data sets could enhance the coverage ratio in campus. 
+
+In this article, we propose a novel \textbf{mass activities discovering model} which can using students' infrequent mobility patterns to detect big activities in campus. In the preliminary analysis, we are dedicated in exploring relationship between infrequent mobility patterns,which represented by mobility motif with mass activities. Although we can't do quantitative analysis very clearly, after a preliminary analysis, when we find a group of students who had attended a large scale activity from the trajectory data and look into their mobility motif, we get some interesting conclusions which directly motivated our research: we found that the numbers of abnormal mobility motifs has a closely connection with the emergence of mass activities as shown in  Fig\ref{fig2}. The figure shows that students who have attended activity are more likely to have abnormal motifsthan normal days when they take part in activities. In each day, with the increase of the scale and numbers of activities, more students present abnormal motifs. 
+\begin{figure}[t]
+	\begin{minipage}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[height=6.6cm]{figs/studentact}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[height=6.6cm]{figs/studentact}
+	\end{minipage}%
+	\caption{Relationship between abnormal motifs number with mass activities. In the left figure, there are 451 students participate the activity on date 23rd. On that day, there are 151 students have a motif that never shows up in other days, which is the biggest number in 15 days. In the right fig, there are about 450 students participate mass activity on 23rd, and about 800 students on 22nd. We can see with more students take part in mass activities, day 22 has more abnormal motifs than day 23rd.}
+	\label{fig2}
+\end{figure}
+
+We can draw a preliminary conclusion that the activity can lead a group of people who have attended the activity perform unregular mobility patterns together. Based on this conclusion, it is very possible to use the the numerical value variation of unregular mobility patterns to judge if there is a mass acivity in each day. Furthermore we want to use the common character of people who have unregular mobility patterns to explore the time and venue of the mass activity.
+
+The task of detecting mass activity from WIFI data is very different from previous work on fine-grained trajectory data, such as GPS data, and thus presents several unique challenges. And besides besides data quality problem, there are too many factors that can affect an individual's mobility pattern, and some factors even have a  wide range of influence. When we research mass activities, these irrelevant factors bring a lot of noises which hard to remove. With the goals mentioned above and in order to overcome these challenges, we use our \textbf{mass activities discovering model} and propose a mass activities detection method: \textbf{SDSD, same day sort detection}. Specifically, our contributions can be summarized as follows:
+
+\begin{itemize}
+	\item[(1)] We emerge and align two different kinds of data sets, which wifi records are continuous data and campus card consuming data are discrete data, promoting integrity of crowds' trajectories.
+	
+	\item[(2)] We use the infrequent human mobility pattern to define "abnormal behavior" from the structural perspective, instead of treat people visiting strange place as "abnormal behavior", focusing more on the subsequent effect of mass activity.
+	
+	\item[(3)] We promote SDSD to enhance the our performance.
+
+	
+\end{itemize}
+
+\section{Related Work}
+Regularity is the basic of our work, because anomaly come with regularity. Barabasi et al\cite{6} point out that the human actions are not randomly distributed in time, actually the timing of many human activities characterized by bursts of rapidly occurring events separated by long periods of inactivity. The non-Poisson nature of human dynamics is the fundamental of human mobility analysis. Also in\cite{9} authors find out that human trajectories show a high degree of temporal and spatial regularity, each individual being characterized by a timeindependent characteristic travel distance and a significant probability to return to a few highly frequented locations.
+
+Besides high regularity, human mobility trajectory has a close connection with individual's behavior, personal characteristics and external factor. In\cite{7} researchers use social media location check-in data inferring demographic attributes of users and obtain a good accuracy in gender and education background, it's an obviously envidence of the relationship between trajectory data with personal characteristics that defferent people have different trajectories.  In\cite{15} the authors indicated that people’s movement behaviors are strongly affected by their social interactions with each other. And in \cite{4}, the paper uses cell-phone traces to analyzes the social events and find out that events which held close to people's home will much more attract them attend. That's how an activity affect people's mobility behavior.
+
+Also there has been more and more researches on abnormal events detection from various kinds of data.\cite{13}\cite{14}\cite{16}\cite{19}  Ther researchers in \cite{16} propose a novel concept ,called gathering, wich involve large congregations of individuals and form durable and stable areas with high density. The paper study the problem of discovering closed gathering patterns from a mass trajectory database. In\cite{14} researchers introduce the methodology of detecting social events in massive mobile phone data, based on a Bayesian location inference framework and discuss some possible future approaches for event detection. In\cite{13}  the paper define the cylindrical cluster to capture sparse spatio-temporal Call Detail Record(CDR) location data and provide practical methods to extract unusual crowd from data. The authors finnally propose a methodology that is able to detect unusual events from CDR data and get a enhanced performance compared to gatering method. In\cite{19} a framework based on a hidden Markov model is proposed to construct a pattern of spatio-temporal movement of people and authors utilize Hadoop to accelerate the processing speed and allow the handling of mass data. Similarly in this paper, we use Spark, a fast and general engine for big data processing, process our data.
+
+The notion "motif" was applicationed in the field of biology in early stage, then it was extended to network and data fields and then motif was used to describe pattern instead of protein structure. The motif we used in this paper is actually the term from network science.\cite{5} The development of researches make motifs very useful for various time-series data mining tasks. In\cite{2} the authors propose a motif discovery algorithm to extract a motif that represents a characteristic pattern of the given data based on Minimum Description Length (MDL) principle. In\cite{17} authors propse the framework of temporal motifs to study the mesoscale topological–temporal structure, and present basic statistics of temporal motifs in a large mobile call network. Also motif is a good form to represent mobility pattern.\cite{1}\cite{3} The researchers of \cite{3} propose a framework to infer human activity types by incorporating the extractable individual daily motifs. Furthermore, in\cite{1} the authors using mobility motif to analyse networks of daily trips obtained from individuals’surveys and anonymized mobile phone data. This arcticle find out that 17 unique motifs can capture up to 90 percent of the population in surveys and mobile phone datasets for different countries. Finally they draw a conclusion that motifs are general human mobility characteristics that can be further used to model and simulate urban activity.  In this paper we use netwokx, which is a is a Python language package for exploration of networks and network algorithms,\cite{12} to analyze and draw motifs.
+
+In this paper we use wifi and campus card consuming data sets to extract students' trajectory data. Some researchers had done some excellent work with this two kind of data sets about human mobility pattern.\cite{8}\cite{12} In\cite{8}, authors capture individual's life regularity and living style from the anonymized wifi scanlists and use the frequent trajectory patterns to represent each user for a user cluster. The researchers in \cite{12} using smart card data to discovering regions with high passenger gathering intensity and mining the regular group behavior among these regions.
+
+To sum up, there are many researchers focus on mobility pattern extracted from a variety of sensor data. Some researchers use mobility motif to process and analyze these data from the structural perspective but only focus on the regular mobility pattern. Some researchers try to detect abnormal events but employ other method and most ignored the abnormal events' structural influences towards the daily mobility pattern. In this paper we combine mobility motif with abnormal events dectction, exploiting wifi and campus card consuming datas to discovr mass activities from a structural view.
+
+\section{mass Activity Detection}
+
+\subsection{Overview}
+Given the nature of large-sacle activity and campus wifi records data, we are facing three major challenges. The first is sparse of the wifi records data. Mobility motif focus on the daily mobility structure of a student so the lack of data will totally change the result. The second is determine whether abnormal motifs are caused by mass activities, because as mentioned above, an induvidual's abnormal mobility pattern may caused by various of factors.Faceing these challenges, we propose a novel framework including multi-source data merge and preprocess, motif extraction and amnormal motif anaylysis as figure\ref{fig3} shows. Firstly, limited to data quality problemwe, we have to preprocess the campus wifi data and campus card consuming data, merge this two data set and keep them aligned to obtain the trajectory data as complete as possible. Secondly, to further promote integrity of the data, with the help of priori knowledge, we employ some data supplement methods and semantic clustering on the trajectory data to get ready for motif extraction. After we get motif data, we can statistically research them to discover all the abnormal users in each day. Finally, we compare these abnormal users, and find their common characters like same place they visited or the differences between their abnormal motifs and their most regular motif. 
+\begin{figure}
+	\centering
+	\includegraphics[height=6cm]{figs/all}
+	\caption{Framework of unusual social crowd event detection}
+	\label{fig3}
+\end{figure}
+
+\subsection{Stay point and mobility trajectory}
+Let $DB_{wifi} = \{log_1,log_2,...,log_n\}$ denote the set of all students' wifi use logs. We define a wifi log as a tuple  $log_i = <u_i,t_j,b_k,a_l>$, which means a student $u_i$ uses wifi at building  $t_j$ at timestamp  $b_k$ and do an action  $a_l$ (access or quit wifi). Specially, There are two ways to quit campus wifi, one is close the wireless , that will send a quit records to the system,like $log_i = <u_i,t_j,b_k,out>$. So that we can get a clear and entire session of the wifi using. However the other way, is someone leave the building with your wireless on, then until the sutdent  connect next campus hotspot that we don't know you had quit the internet. So strictly speaking, in this condition we don't know the exact  duration of the WiFi connection. We intentionally add a record like $log_i = (j_i, t_{i+1}, b_i,out)$. After we get these wifi behavior records, we merge them into wifi using sessions like $Session_i = <j_i, ts_i, te_i, b_i>$, here \textbf{ts} and \textbf{te} means the session's start time and end time. We join the adjacent and bulding-same records of the same user, and set a threshold $\delta$. If the wifi session duration bigger than $\delta$, we treat it as a stay point or else we till dicard the records. for the campus card consuming records, because it only record the consuming time, we depend on the bulding and cosuming number to set a duration time then it can obey above-metioned rules. For all the records that pass the test, we only keep their start time like $Session_i = <j_i, ts_i, b_i>$. Then we define the individual mobility trajectory\cite{13}\cite{20} for each user as follows.
+
+\emph{Definition 1. Individual Trajectory}: A student $u_i$'s mobility trajectory from start time $t_p$ to end time $t_q$ is defined as a sequence of spatio-temporal tuples $tr^{pq}_i=\cup(t_i,b_i)$, where $t_p<=t_i<=t_q$ and $tr^{pq}_i\in T$. $T$ stands for the set of user trajectory sequences.
+
+\subsection{Individual daily Mobility motif}
+Generally speaking, motif is a simplified and structural graph to represent human mobility. In this article we focus on daily mobility motif, so in the day time scales, each student's trajectory data can be treated as a location sequence in temporal order as shown in figure\ref{motif}. When we extract mobility motif from this location sequence which denoted  as  $Loc=<t_i,l_i>$, we replace the  specific building name with some numbesr $N$ and igrnore the dwell time .  Also we use directed connecting lines $l=(N_i\rightarrow N_j)$ to represent student's movement between buildings with ignoring the distance and transfer number.  Algorithm 1 shows the pseudo code of individual's daily mobility motif extraction algorithm, which is composed of three phases. First, the algorithm check the new record's timestamp $t_i$ to determine if the records belong to a new day. If so the algorithm will create a new moif for this day and begin the daily scale location sequence process.  Once a new building emerge in the records, we use a number, which equals the number of buildings emerged, to represent the new building. Thus the trasfer from the previous building to the this building can be represented as a number tuple $T(N_previous,N_this)$. Finally all the $T$ in one day  can compose a daily mobility motif defined as follow.
+
+\emph{Definition 2. Individual daily mobility motif}: A student $u_i$'s daily mobility motifis defined as a sequence of origin-destination tuple $m_i=\cup(N_o,N_d)$,  where $N \in$ stay-point-number, and $m_i\in M$. $M$ stands for the set of user daily mobility motifs.
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[height=6cm]{figs/sequencemotif}
+	\caption{Mobility motif extraction}
+	\label{motif}
+\end{figure}
+\begin{algorithm}
+	\caption{Individual's Mobility Motif Extraction}
+	\label{alg1}
+	\begin{algorithmic}[1] %每行显示行号
+		\Require temporal-ordered spatial-temporal trajectory sequence $S[(t_1,b_1)...(t_n,b_n)], n\in$ days number,
+		\Ensure daily mobility motifs list $M<m_0,m_1...m_d>, d= Days, m=<(N_0,N_1)...(N_j,N_k)>, N\leq$ one day staypoint number
+		\State $motif = \emptyset$
+		\State Split  sequence $S$ into day scale  sequences $S_1,S_2...S_n$ 
+		\For {$i=1 \to Days$}
+		\State $M_i=\emptyset$
+		\For each records $R_j(t_j,b_j) \in S_i$
+		\State $SpSet=\emptyset$
+		\If {$b_j \notin SpSet$}
+		\State $N_{b_j}=$(length of $SpSet$) 
+		\State add a tuple $T(N_{b_{j-1}}, N_{b_{j}})$ to $M_i$
+		\ElsIf {$T(N_{b_{j-1}}, N_{b_{j}}) \notin M_i$}
+		\State add $T(N_{b_{j-1}}, N_{b_{j}})$ to $M_i$
+		\EndIf
+		\EndFor
+		\EndFor
+	\end{algorithmic}
+\end{algorithm}
+
+\subsection{Daily abnormal crowd and building discovery}
+Since every student has a daily mobility motifs set $M<m_0,m_1...m_d>$ in a time period, we can calculate the occurrence frequency of each motifs $f_{m_0}$. Intuitively, the most commom mobility motifs emerge more often. So we set a frequency threshold $\delta_m$ that can help us determine abnormal mobility motif if the motif' $f_{m_0}< \delta_m$. Once a student has an abnormal mobility motif then he/she will be treated as a abnormal user at that day. At each day, a group of these abnormal users will compose a daily abnormal crowd .
+
+\emph{Definition 3. Daily abnormal crowd}: A daily abnormal crowd at date $i$ is defined as a sequence of students $c_i=\cup(u_j)$, where $u_j$ at date $i$ has motif $m_i$ and $f_{m_i}<\delta_m$. $c_i\in C$. $C$ stands for the set of daily abnormal crowds.
+
+Since there are many abnormal users in a day, we have to find the common characters of these abnormal users. In this paper we look into the places that these abnormal crowd both have stayed and thus can get a building frequency list $<b_0,b_1...b_n>$. Every building in this list has a number $\beta$ that represent how many abnormal students have stayed. Due to the  specificity of students' mobility pattern, there are many buildings that students will often visit and these buildings seldom hold mass activities, like teaching buildings. Thus we set a "common building" threshold $\delta_b$ that if a student had stayed in the building for $st$ days in the entire time period and $st>\delta_b$, the building will be treated as a common building that has no influence on the student's mobility pattern abnormity. After this filter, the rest buildings are abnormal buildings which defined as follow:
+
+\emph{Definition 4. Daily abnormal building list}: A daily abnormal building list at date $i$ is defined as a sequence of buildings $bl_i=\cup(b_j)$, where $b_j$ at date $i$ has $\beta_j$ abnormal crowds and all these students have  $st<\delta_m$. $bl \in BL$, where $BL$ stands for the set of daily abnormal building lists.
+
+ \subsection{Mass activity discovery}
+In the daily abnormal building list $bl$, every building has an abnormal corwds number $\beta$. However, we can't easily compare this number of same building in different days. Because as mentioned above, an individual's mobility pattern will affecteb by many factors, in order to concentrate on the mass activity factor, we have to  minimize other influence. For example the weather obviously will change many people's mobility behaviors so in different days, a building's abnormal crowd visited number can not be simply compared with each other under the same standard. So we promote a detection method: SDSD, same day sort detection. By this method we can decrease the influence of some external factors, at least every students are facing the same environment condition in the same day. In each daily abnormal building list, we place every abnormal building from big $\beta$ to small.  And thus the top $k$ buildings in this list may be the main factors that cause abnormal mobility motifs. If we treat all top $k$ buildings as mass activity building, then in all 86 days period, we will predict $k*86$ mass activities. However mass activities are not everyday events. To promote our precision, in SDSD we calculate every building's average $\beta$ and with this number as a reference we set a threshold $\delta_{activity}$ for every building. Then when we judge a building whether hold a mass activity or not, we not only look into the daily abnormal building list to check if it's on the top $k$, but also need to compare its abnormal crowds number with $\delta_{activity}$
+
+\section{Experimental Setup}
+\subsection{Data sets}
+
+\textbf{Wifi records data}: The OMNILAB made available data collected in Shanghai Jiaotong university, Minhang campus over a five-month period, from September 2014 to January 2015. The datasets describe all wifi access behaviors of 22,601 users, who are all students of SJTU. Specifically, the data contains a building name and a timestamp that record a user's wifi connection in the form of tuple $<UserID,Time,Building>$. 
+
+\textbf{Campus card consuming data}: The data set was offered by Network and Information Center, contains 26267 students, and has same time period with wifi records data. This data contains a building name, a timestamp and consumption amount that record a user's consume with campus card in the form of tuple $<UserID,Time,Building,amount>$. 
+
+To avoid privacy issues, the above-mentioned data has been anonymized by OMNILAB. The Fig\ref{campus} shows the coverage region of these two data sets.
+\begin{figure}
+	\centering
+	\includegraphics[height=6cm]{figs/campus}
+	\caption{Two data sets coverage regions. The red points represent campus card consuming data's coverage buildings, and the blue points represent the wifi records data's coverage buildings.}
+	\label{campus}
+\end{figure}
+
+\textbf{Mass activities data set}: This data set was used to verify the experimental results. The data was get from the internet, include Shanghai Jiaotong University's activity registration website and its serveral news websites.  From the activity registration website we can obtain the number of activity registration. however some activities, which haven't recorded by the registration website, is very difficult to know their registrators and participator numbers. In order to determine which activity is a mass activity, we  get some volunteers and give them a list consist all activity informations,include activity name, dates,source web, followers number, limit number and registrators number. After a vote by all volunteers we choose acitivities that have a high ticket as the mass activities.
+
+\subsection{Data fusion and preprocess}
+The wifi records data was sparse and the most serious problem is the data doesn't cover dorms, this brings  much uncertainty about students' mobility pattern. The campus card consuming data has no dorm data,too. But it has shower data, which implied dorm data because part of students take shower in their dooms, the other part take shower in public bathroom and mainly return their doms after shower. After data fusion there still existed information shortage, like a student's daily trajectory only contains three canteen records. This daily trajectory can't be true because canteen only open at dinning time, so we lost records of the student between two meals.  According to this circumstance, we calculate the most common place that the student stayed in that time period, and add the place between two canteen records.
+
+After data fusion, there are still some users have information shortage problem. So in order to choose the individuals whose mobility behaviors are reflected better, we set a threshold to filter them. First,  the less days a student stay in campus, the more difficult to distinguish the student's common mobility pattern between abnormal mobility pattern. Since the total weekdays in our data's time period are 103 days and there are about 10\% users do not have 60 days in-campus records.  And 50\% users have less than 4 stay points per day. After the filter, there are 9796 students left.
+
+\subsection{Semantic clustering and mobility motif}
+At the beginning of the experiment, we use the building as the stay point. Due to the character of students mobility, a student will stay in a big number buildings one day, and that makes individual's daily mobility motifs' variety exploded. That lead to student seldom have regular motif and bring huge difficulty to the following research. In order to decrease the variety of motifs, we use buildings' semantic information to replace every building with their semantic function labels, such as all canteens called "CantBld". There are 10 kinds of labels, and each kind has several buildings. After this step, variety of mobility motifs decrease from 3546 to 1189 and concentrate more in the frequent mobility motifs as shown in Fig\ref{motifnumber}.
+\begin{figure}
+	\centering
+	\includegraphics[height=6cm]{figs/motifnumber}
+	\caption{Motif number accumulation graph.}
+	\label{motifnumber}
+\end{figure}
+
+\subsection{Abnormal crowd and activity discover}
+To the best of our knowledge, this is the first work to detect abnormal crowd and activities in campus data, and it is also the first time that we discover the mass activities in wifi records data and campus consuming data. Due to the sparse of wifi records data and the particularity of student movement, we design a comparative method called: SG, simple gatering. The difference between our method with SG is that our method calculate abnormal crowds number in each building but SG calculate all students that have stayed in each building. After using the volunteer-labeled mass activity data set to do our experiment, the result wa reported in Table 1.
+
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+\begin{table}[]
+\centering
+\caption{Comparison of the mass activity discovery (MAD) and simple gatering (SG) }
+\label{my-label}
+\begin{tabular}{|c||c|l|l|l|l|}
+\hline
+Date      & Event Name                                   & \multicolumn{1}{c|}{MAD} & \multicolumn{1}{c|}{\#MAD}             & \multicolumn{1}{c|}{SG} & \multicolumn{1}{c|}{\#SG}              \\ \hline \hline
+09-17     & Concert for freshmen                         & \multicolumn{1}{c|}{}    & \multicolumn{1}{c|}{\multirow{4}{*}{}} & \multicolumn{1}{c|}{}   & \multicolumn{1}{c|}{\multirow{4}{*}{}} \\ \cline{1-3} \cline{5-5}
+09-18     & Motivational Lecture                         & \multicolumn{1}{c|}{}    & \multicolumn{1}{c|}{}                  & \multicolumn{1}{c|}{}   & \multicolumn{1}{c|}{}                  \\ \cline{1-3} \cline{5-5}
+09-24     & Morgan Stanley Tech Talks                    & \multicolumn{1}{c|}{}    & \multicolumn{1}{c|}{}                  & \multicolumn{1}{c|}{}   & \multicolumn{1}{c|}{}                  \\ \cline{1-3} \cline{5-5}
+09-26     & Shanghai Symphony Orchestra Concert          & \multicolumn{1}{c|}{}    & \multicolumn{1}{c|}{}                  & \multicolumn{1}{c|}{}   & \multicolumn{1}{c|}{}                  \\ \hline
+10-15     & Blood Donation                               & \multicolumn{1}{c|}{}    & \multicolumn{1}{c|}{\multirow{5}{*}{}} & \multicolumn{1}{c|}{}   & \multicolumn{1}{c|}{\multirow{5}{*}{}} \\ \cline{1-3} \cline{5-5}
+10-16     & Education Teach-in                           &                          & \multicolumn{1}{c|}{}                  &                         & \multicolumn{1}{c|}{}                  \\ \cline{1-3} \cline{5-5}
+10-17     & Recruitment Talk                             &                          & \multicolumn{1}{c|}{}                  &                         & \multicolumn{1}{c|}{}                  \\ \cline{1-3} \cline{5-5}
+10-17     & Stage Drama                                  &                          & \multicolumn{1}{c|}{}                  &                         & \multicolumn{1}{c|}{}                  \\ \cline{1-3} \cline{5-5}
+10-17     & CUBA Opener Basketball Opener                &                          & \multicolumn{1}{c|}{}                  &                         & \multicolumn{1}{c|}{}                  \\ \hline
+10-20     & Recruitment Talk                             &                          &                                        &                         &                                        \\ \hline
+10-21     & Cross Talk                                   &                          & \multirow{6}{*}{}                      &                         & \multirow{6}{*}{}                      \\ \cline{1-3} \cline{5-5}
+10-22     & Recruitment Talk                             &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+10-22     & Freshman Initiation Party                    &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+10-22     & Freshman Initiation Party                    &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+10-23     & Freshman Initiation Party                    &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+10-24     & Master Lecture                               &                          &                                        &                         &                                        \\ \hline
+10-27     & Master Lecture                               &                          & \multirow{4}{*}{}                      &                         & \multirow{4}{*}{}                      \\ \cline{1-3} \cline{5-5}
+10-29     & Motivational Lecture                         &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+10-30     & Freshman Initiation Party                    &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+10-31     & Costume Ball                                 &                          &                                        &                         &                                        \\ \hline
+11-04     & Abroad Study Teach-in                        &                          & \multirow{6}{*}{}                      &                         & \multirow{6}{*}{}                      \\ \cline{1-3} \cline{5-5}
+11-05     & Blood Donation                               &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+11-06     & Master Lecture                               &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+11-12     & Motivational Lecture                         &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+11-21     & School Sports Meeting                        &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+11-27     & Stage Drama                                  &                          &                                        &                         &                                        \\ \hline
+12-01     & Live Show Recording                          &                          & \multirow{5}{*}{}                      &                         & \multirow{5}{*}{}                      \\ \cline{1-3} \cline{5-5}
+12-03     & Blood Donation                               &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+12-03     & Professional Lecture                         &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+12-04     & Campus Singer Competition                    &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+12-10     & Motivational Lecture                         &                          &                                        &                         &                                        \\ \hline
+12-11     & Basketball Game with Yao Ming Coming         &                          & \multirow{5}{*}{}                      &                         & \multirow{5}{*}{}                      \\ \cline{1-3} \cline{5-5}
+12-16     & Culture and Art Festival of College Students &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+12-22     & Master Speech                                &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+12-24     & Master Speech                                &                          &                                        &                         &                                        \\ \cline{1-3} \cline{5-5}
+12-31     & New Year's Eve Party                         &                          &                                        &                         &                                        \\ \hline
+Total     & \multicolumn{1}{l|}{}                        &                          &                                        &                         &                                        \\ \hline
+Precision & \multicolumn{1}{l|}{}                        & \multicolumn{2}{l|}{}                                             & \multicolumn{2}{l|}{}                                            \\ \hline
+Recall    & \multicolumn{1}{l|}{}                        & \multicolumn{2}{l|}{}                                             & \multicolumn{2}{l|}{}                                            \\ \hline
+\end{tabular}
+\end{table}
+
+From the table we can see that 
+
+\subsection{Experimental Results and Analysis}
+
+
+\section{Conclusion and Future Work}
+
+\subsubsection*{Acknowledgments.} 
+The authors would like to thank...
+
+\begin{thebibliography}{4}
+\bibitem{1}
+Schneider C M, Belik V, Couronné T, et al. Unravelling daily human mobility motifs[J]. Journal of The Royal Society Interface, 2013, 10(84): 20130246.
+\bibitem{2}
+Tanaka Y, Iwamoto K, Uehara K. Discovery of time-series motif from multi-dimensional data based on MDL principle[J]. Machine Learning, 2005, 58(2-3): 269-300.
+\bibitem{3}
+Jiang S, Fiore G A, Yang Y, et al. A review of urban computing for mobile phone traces: current methods, challenges and opportunities[C]//Proceedings of the 2nd ACM SIGKDD international workshop on Urban Computing. ACM, 2013: 2.
+\bibitem{4}
+F. Calabrese, F. C. Pereira, G. Di Lorenzo, L. Liu, and C. Ratti, “The geography of taste: analyzing cell-phone mobility and social events,” in Pervasive computing, Springer, 2010, pp. 22–37.
+\bibitem{5}
+Milo R, Shen-Orr S, Itzkovitz S, et al. Network motifs: simple building blocks of complex networks[J]. Science, 2002, 298(5594): 824-827.
+\bibitem{6}
+Barabasi A L. The origin of bursts and heavy tails in human dynamics[J]. Nature, 2005, 435(7039): 207-211.
+\bibitem{7}
+Zhong Y, Yuan N J, Zhong W, et al. You are where you go: Inferring demographic attributes from location check-ins[C]//Proceedings of the Eighth ACM International Conference on Web Search and Data Mining. ACM, 2015: 295-304.
+\bibitem{8}
+Zhao S, Zhao Z, Zhao Y, et al. Discovering People's Life Patterns from Anonymized WiFi Scanlists[C]//Ubiquitous Intelligence and Computing, 2014 IEEE 11th Intl Conf on and IEEE 11th Intl Conf on and Autonomic and Trusted Computing, and IEEE 14th Intl Conf on Scalable Computing and Communications and Its Associated Workshops (UTC-ATC-ScalCom). IEEE, 2014: 276-283.
+\bibitem{9}
+Gonzalez M C, Hidalgo C A, Barabasi A L. Understanding individual human mobility patterns[J]. Nature, 2008, 453(7196): 779-782.
+\bibitem{10}
+Frank M R, Mitchell L, Dodds P S, et al. Happiness and the patterns of life: A study of geolocated tweets[J]. Scientific reports, 2013, 3.
+\bibitem{11}
+Dong Y, Pinelli F, Gkoufas Y, et al. Inferring Unusual Crowd Events From Mobile Phone Call Detail Records[M]//Machine Learning and Knowledge Discovery in Databases. Springer International Publishing, 2015: 474-492.
+\bibitem{12}
+Du B, Yang Y, Lv W. Understand Group Travel Behaviors in an Urban Area Using Mobility Pattern Mining[C]// Ubiquitous Intelligence and Computing, 2013 IEEE 10th International Conference on and 10th International Conference on Autonomic and Trusted Computing (UIC/ATC). IEEE, 2013:127-133.
+\bibitem{13}
+Y. Dong, Fabio Pinelli, Y. Gkoufas, Z. Nabi, F. Calabrese, and N. V. Chawla, “Inferring Unusual Crowd Events From Mobile Phone Call Detail Records,” arXiv preprint arXiv:1504.03643, 2015.
+\bibitem{14}
+V. A. Traag, A. Browet, F. Calabrese, and F. Morlot, “Social event detection in massive mobile phone data using probabilistic location inference,” in Privacy, Security, Risk and Trust (PASSAT) and 2011 IEEE Third Inernational Conference on Social Computing (SocialCom), 2011 IEEE Third International Conference on, 2011, pp. 625–628.
+\bibitem{15}
+Yang S, Yang X, Zhang C, et al. Using social network theory for modeling human mobility[J]. Network, IEEE, 2010, 24(5): 6-13.
+\bibitem{16}
+ZhengKai Z Y, YUAN N J. OnDiscovery of Gathering Patterns from Trajectories[J]. IC DE, Tianjin, China, 2013.
+\bibitem{17}
+Kovanen L, Karsai M, Kaski K, et al. Temporal motifs in time-dependent networks[J]. Journal of Statistical Mechanics: Theory and Experiment, 2011, 2011(11): P11005.
+\bibitem{18}
+M. Trepanier, C. Morency, and B. Agard. Calculation of
+transit performance measures using smartcard data. Journal
+of Public Transportation, 12(1):79–96, 2009.
+\bibitem{19}
+Witayangkurn A, Horanont T, Sekimoto Y, et al. Anomalous event detection on large-scale gps data from mobile phones using hidden markov model and cloud platform[C]//Proceedings of the 2013 ACM conference on Pervasive and ubiquitous computing adjunct publication. ACM, 2013: 1219-1228.
+\bibitem{20}
+F. Giannotti, M. Nanni, F. Pinelli, and D. Pedreschi. Trajectory pattern mining. In ACM
+SIGKDD’07, pages 330–339, New York, NY, USA, 2007. ACM.
+
+\end{thebibliography}
+
+
+\end{document}
